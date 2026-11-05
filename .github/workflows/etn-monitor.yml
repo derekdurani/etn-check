@@ -1,0 +1,31 @@
+name: ETN seat monitor
+
+on:
+  schedule:
+    # GitHub usa UTC. 00:00 y 18:00 UTC = 18:00 y 12:00 en America/Mexico_City (UTC-6).
+    # Es decir: revisa a las 12:00 PM y 6:00 PM hora de Mexico.
+    - cron: "0 0,18 * * *"
+  workflow_dispatch: {}   # permite correrlo manualmente desde la pestana Actions
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # ----- Edita aqui la ruta y la fecha que quieres monitorear -----
+      ETN_ORIGIN: t-leon-central
+      ETN_DEST: t-ciudad-victoria
+      ETN_DATE: "2026-11-21"               # formato YYYY-MM-DD
+      ETN_LABEL: "Leon -> Cd. Victoria"
+      # ----------------------------------------------------------------
+      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}  # se configura como secreto del repo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar Playwright
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Consultar ETN y notificar
+        run: python etn_check.py
