@@ -11,12 +11,6 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      # ----- Edita aqui la ruta y la fecha que quieres monitorear -----
-      ETN_ORIGIN: t-leon-central
-      ETN_DEST: t-ciudad-victoria
-      ETN_DATE: "2026-11-21"               # formato YYYY-MM-DD
-      ETN_LABEL: "Leon -> Cd. Victoria"
-      # ----------------------------------------------------------------
       NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}  # se configura como secreto del repo
     steps:
       - uses: actions/checkout@v4
@@ -27,5 +21,23 @@ jobs:
         run: |
           pip install playwright
           python -m playwright install --with-deps chromium
-      - name: Consultar ETN y notificar
+
+      # ----- Ruta 1: ida -----
+      - name: Consultar Leon -> Cd. Victoria (21-nov-2026)
+        if: always()
+        env:
+          ETN_ORIGIN: t-leon-central
+          ETN_DEST: t-ciudad-victoria
+          ETN_DATE: "2026-11-21"            # formato YYYY-MM-DD
+          ETN_LABEL: "Leon -> Cd. Victoria"
+        run: python etn_check.py
+
+      # ----- Ruta 2: regreso -----
+      - name: Consultar Cd. Victoria -> Leon (22-nov-2026)
+        if: always()
+        env:
+          ETN_ORIGIN: t-ciudad-victoria
+          ETN_DEST: t-leon-central
+          ETN_DATE: "2026-11-22"            # formato YYYY-MM-DD
+          ETN_LABEL: "Cd. Victoria -> Leon"
         run: python etn_check.py
