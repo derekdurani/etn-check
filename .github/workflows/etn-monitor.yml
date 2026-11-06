@@ -1,13 +1,11 @@
 name: ETN seat monitor
 
 on:
-  schedule:
-    # GitHub usa UTC. 00:11 y 18:11 UTC = 18:11 y 12:11 en America/Mexico_City (UTC-6).
-    # Es decir: revisa ~12:11 PM y ~6:11 PM hora de Mexico.
-    # Se usa el minuto 11 (no el 0) porque los cron en punto son los que GitHub
-    # mas retrasa o se salta por congestion. Aun asi pueden ocurrir retrasos.
-    - cron: "11 0,18 * * *"
-  workflow_dispatch: {}   # permite correrlo manualmente desde la pestana Actions
+  # El horario lo controla una tarea programada de Claude (un reloj confiable en
+  # la nube) que lanza este workflow via workflow_dispatch a las 12:00 PM y
+  # 6:00 PM hora de Mexico. No se usa el 'schedule:' de GitHub porque su cron se
+  # retrasa o se salta corridas. Tambien puedes lanzarlo a mano desde Actions.
+  workflow_dispatch: {}
 
 jobs:
   check:
